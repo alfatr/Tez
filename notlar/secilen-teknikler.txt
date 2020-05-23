@@ -1,0 +1,27 @@
+Kaynak Siteler
+https://www.d3-graph-gallery.com/
+https://hackernoon.com/top-16-types-of-chart-in-data-visualization-hrh32wv
+
+
+*** Şimdilik Seçilenler ***
+
+Histogram ++
+Column Chart
+Bar Chart ++
+Line Chart
+Area Chart
+Pie Chart
+Scatter Plot
+Bubble Chart
+Gauge
+Radar Chart
+Frame Diagram
+Rectangular Tree Diagram
+Funnel Chart
+Word Cloud Chart
+Gantt Chart
+Map
+    Regional Map
+    Point Map
+    Flow Map
+Heatmap
