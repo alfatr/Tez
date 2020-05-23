@@ -5,13 +5,14 @@ https://hackernoon.com/top-16-types-of-chart-in-data-visualization-hrh32wv
 
 *** Şimdilik Seçilenler ***
 
-Histogram ++
+Histogram           +
+Scatter Plot        +
+Bar Chart           +
+Line Chart          +
+---
 Column Chart
-Bar Chart ++
-Line Chart
 Area Chart
 Pie Chart
-Scatter Plot
 Bubble Chart
 Gauge
 Radar Chart
