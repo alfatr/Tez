@@ -2,7 +2,6 @@ from flask import Flask, render_template, url_for
 from flask_assets import Bundle, Environment
 
 app = Flask(__name__)
-app.register_blueprint(predict_api, url_prefix='/machinelearning')
 
 js = Bundle(
         'js//libraries//jquery-3.5.1.slim.min.js',
