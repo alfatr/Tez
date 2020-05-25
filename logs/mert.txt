@@ -11,4 +11,4 @@ to do:
 * Python Flask projesini ilerletmek
 ---
 * Yapılan araştırmaları rapor için not etmek
-* Araştıralan her kaynağı rapor içine kaydetmek!!!
+* Araştıralan her kaynağı rapor içine kaydetmek
