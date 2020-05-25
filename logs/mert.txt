@@ -1,0 +1,14 @@
+1) Python Flask projesini ekledim.
+2) Projeyi bilgisayardaki python sürümüne bağlı olmasın diye, virtual env ekledim.
+3) JavaScript ve CSS dosyalarını bundle haline getirdim.
+4) Template yapısını kullandım ama değişebilir.
+    Yani her sayfa base sayfasını kalıtımla alabiliyor. 
+    flask-startup/templates içine bakabilirsin.
+
+to do:
+
+* Veriseti bulunması
+* Python Flask projesini ilerletmek
+---
+* Yapılan araştırmaları rapor için not etmek
+* Araştıralan her kaynağı rapor içine kaydetmek!!!
