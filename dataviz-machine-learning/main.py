@@ -1,1 +1,0 @@
-# Projeyi virtual environment kullanarak yazabiliriz. 
