@@ -1,3 +1,0 @@
-Tüm grafikleri ekledikten sonra, 
-    Örneğin büyük bir verisetinden elde edilebileceğimiz grafikleri bulabilmek.
-    Bulduktan sonra zaten grafiği oluşturması kolay.

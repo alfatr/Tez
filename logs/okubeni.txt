@@ -1,5 +1,0 @@
-Kendimize özel iki metin belgesi açtım. 
-
-Aklımıza gelenleri buraya yazmayı ve issue olarak açmaya çalışmalıyız.
-Yaptıklarımızı oraya da yazarsak projenin takibini ve ilerlemesini kolaylaştırırız.
-Bu cidden önemli, vaktimiz çok az ve ilerlememiz lazım.
