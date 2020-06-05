@@ -1,14 +1,19 @@
 # Flask ve url, bundling işlemleri
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_assets import Bundle, Environment
-# Dosya yükleme
-from werkzeug.utils import secure_filename
 import os
-# Blueprints
+from os.path import join, dirname, realpath
+
+# Dosya yükleme işlemleri
+from werkzeug.utils import secure_filename
+
+# Makine öğrenmesi ve data analizi
+import pandas as pd
+import numpy as np
+
+UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static/datasets/..')
+ALLOWED_EXTENSIONS = {'csv', 'xls'}
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'C:\\Users\\Weaver\\Desktop'
-ALLOWED_EXTENSIONS = {'csv', 'xls', 'json'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -18,7 +23,13 @@ def allowed_file(filename):
 @app.route("/", methods=['GET', 'POST'])
 @app.route("/home", methods=['GET', 'POST'])
 
-def upload_file():
+def homepage():
+    return render_template(
+        "layout.html",
+        title = "Home")
+
+@app.route("/select_dataset", methods=['GET', 'POST'])
+def select_dataset():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -33,10 +44,31 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            # return redirect(url_for('/home'))
+            
+            return redirect(url_for('upload_successful', dataset_file = filename))
     
+    return render_template(
+        "select_dataset.html",
+        title = "Select Dataset")
     
-    return render_template("master.html")
+
+@app.route("/upload_successful/<path:dataset_file>", methods=['GET', 'POST'])
+def upload_successful(dataset_file):
+    if dataset_file == '' :
+        return redirect(url_for('select_dataset'))
+    
+    df = pd.read_csv(dataset_file)
+    JSONdata = df.to_dict(orient='records')
+
+    
+
+    return render_template(
+        "upload_successful.html",
+        title = "Upload Successful",
+        dataset_file = dataset_file,
+        dataframe_var = df,
+        data = JSONdata,
+        JSONdata = JSONdata)
 
 if __name__ == '__main__':
     app.debug = True
