@@ -1,11 +1,11 @@
 # Makine Öğrenmesi Tabanlı Veri Görselleştirme Motorunun Geliştirilmesi
 
 - Flask ile back-end bağlantısının düzgün yapılması
-- Verisetlerinin lokalden yüklenmesi
-- Verisetinin işlenmesi
-- Çizilmesi mümkün grafiklerin back end tarafından belirlenmesi
+- Veri setlerinin lokalden yüklenmesi
+- Veri setinin işlenmesi
+- Çizilmesi mümkün grafiklerin back-end tarafından belirlenmesi
 * Grafikler arasında değerlendirme
-- D3.js grafiklerinin jenerik şekilde çizilmesi(Datayı JSON olarak alıp.)
+- D3.js grafiklerinin jenerik şekilde çizilmesi (Veriyi JSON olarak alıp)
 - Grafiklerin farklı verisetleriyle kontrolü
 - Yapay zekayla yorumlama yapma
 
