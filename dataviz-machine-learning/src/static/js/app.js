@@ -1,7 +1,9 @@
 $(document).ready(function(){
     console.log("app.js -> Document ready function")
-
-    data = JSONdata
+    domRect = $("#first-graph")[0].getBoundingClientRect();
+    console.log(domRect)
+    
+    data = JSONdata 
     scatterPlot(data)
 })
 
@@ -23,8 +25,6 @@ function scatterPlot(data){
     width = 460 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
-    domRect = $("#first-graph")[0].getBoundingClientRect();
-    console.log(domRect)
     // append the svg object to the body of the page
     var svg = d3.select("#first-graph")
     .append("svg")
