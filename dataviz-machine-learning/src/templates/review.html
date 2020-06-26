@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block title %}{{title}}{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/review.css">
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <h3>Veri Setinin İlk 5 Satırı</h3>
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Index</th>
+                {% for i in range(uploaded_df.columns | length) %}
+                    <th scope="col">{{uploaded_df.columns.values[i]}}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+                {% for i in range (5) %}
+                    <tr>
+                        <th scope="row"> {{ i }}</th>
+                        {% for j in range (uploaded_df.columns | length) %}
+                            <td> {{ uploaded_df[uploaded_df.columns.values[j]].loc[i] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                <tr id="checkbox_row">
+                    <th scope="row"></th>
+                    {% for j in range (uploaded_df.columns | length) %}
+                        <th>
+                            <input type="checkbox" id="{{uploaded_df.columns.values[j]}}_checkbox" name="{{uploaded_df.columns.values[j]}}" value="{{uploaded_df.columns.values[j]}}">
+                        </th>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+        <a id="evaluate" href="{{ url_for('results.results') }}" class="btn btn-block btn-primary">Değerlendir</a>
+        <h3>Veri Setinin Sayısal Özellikleri</h3>
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                {% for i in range(characteristics_df.columns | length) %}
+                    <th scope="col">{{characteristics_df.columns.values[i]}}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+                {% for i in range (5) %}
+                    <tr>
+                        <th scope="row"> {{ i }}</th>
+                        {% for j in range (characteristics_df.columns | length) %}
+                            <td> {{ characteristics_df[characteristics_df.columns.values[j]].loc[i] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+        var url_for_results = "{{ url_for('results.results') }}"
+        var dataset_file_name = "{{dataset_file_name}}"
+
+        console.log("HTML script is working now...")
+        console.log(url_for_results)
+
+        $(document).ready(function(){
+            $.post(
+                url_for_results,
+                { param : 'Results' },
+                function(response)
+                {
+                    console.log(response)
+                }
+            );
+        })
+    </script>
+    
+{% endblock %}
