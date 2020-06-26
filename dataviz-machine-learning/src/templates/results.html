@@ -1,40 +1,14 @@
 {% extends "layout.html" %}
 {% block title %}{{title}}{% endblock %}
-
 {% block head %}
-    <!-- Bu tag sayesinde parent template'in bu block içindeki değerlerini render ediyoruz. -->
     {{ super() }}
-    <link rel="stylesheet" href="/static/css/select_dataset.css">
+    <link rel="stylesheet" href="/static/css/upload.css">
 {% endblock %}
 
 {% block content %}
-<div id="graphs" class="carousel slide" data-ride="carousel">
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <div id="first-graph" class="canvas"></div>
-        <div id="first-description" class="description">
-            Bu graph neden seçildi, skoruyla birlikte burada açıklanmalı
-        </div>
-      </div>
-      <div class="carousel-item">
-        <div class="canvas"></div>
-        <div class="description"></div>
-      </div>
-
-    <!-- Carousel Controls -->
-    <a class="carousel-control-prev" href="#graphs" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#graphs" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
-</div>
+    <h1></h1>
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
-    <!-- <script src="/static/js/app.js" type="text/javascript"></script> -->
 {% endblock %}
-
