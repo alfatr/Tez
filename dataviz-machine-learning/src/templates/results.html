@@ -6,7 +6,26 @@
 {% endblock %}
 
 {% block content %}
-    <h1></h1>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        {% for i in range(possible_drawings.columns | length) %}
+            <th scope="col">{{possible_drawings.columns.values[i]}}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+        {% for i in range (possible_drawings.shape[0]) %}
+            <tr>
+                <th scope="row"> {{ i }}</th>
+                {% for j in range (possible_drawings.columns | length) %}
+                    <td> {{ possible_drawings[possible_drawings.columns.values[j]].loc[i] }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
 
 {% block scripts %}
