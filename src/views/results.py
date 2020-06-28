@@ -160,10 +160,7 @@ def results():
         
         
         possible_drawings.append(pd.DataFrame(combination_df.values, columns = graphs.columns))
-        
-        for d in possible_drawings:
-                print(d.values)
 
-        return render_template("results.html", possible_drawings = possible_drawings[0])
+        return render_template("results.html", title = 'Results Page',  possible_drawings = possible_drawings[0])
 
         

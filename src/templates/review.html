@@ -38,27 +38,6 @@
             </tbody>
         </table>
         <a id="evaluate" href="{{ url_for('results.results') }}" class="btn btn-block btn-primary">Değerlendir</a>
-        <h3>Veri Setinin Sayısal Özellikleri</h3>
-        <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                {% for i in range(characteristics_df.columns | length) %}
-                    <th scope="col">{{characteristics_df.columns.values[i]}}</th>
-                {% endfor %}
-              </tr>
-            </thead>
-            <tbody>
-                {% for i in range (5) %}
-                    <tr>
-                        <th scope="row"> {{ i }}</th>
-                        {% for j in range (characteristics_df.columns | length) %}
-                            <td> {{ characteristics_df[characteristics_df.columns.values[j]].loc[i] }}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 {% endblock %}
 
