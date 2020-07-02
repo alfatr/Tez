@@ -8,20 +8,27 @@ $(document).ready(function () {
     for (i = 0; i < scores.length; i++) {
         console.log(scores[i][0] + " - " + scores[i][1])
         if (scores[i][0] == "Box Plot") {
-            BoxPlot(i)
+            BoxPlot_OneNumeric_OneCategorical(i)
         }
         if (scores[i][0] == "Violin") {
-            Violin(i)
+            Violin_OneNumeric_OneCategorical(i)
         }
-
-        if (scores[i][0] == "Histogram") {
-            Histogram(i)
+        if (scores[i][0] == "Line") {
+            Line_Two_Numerical(i)
         }
     }
 })
 
+function sortFunction(a, b) {
+    if (a[1] === b[1]) {
+        return 0;
+    }
+    else {
+        return (a[1] > b[1]) ? -1 : 1;
+    }
+}
 
-function BoxPlot(index) {
+function BoxPlot_OneNumeric_OneCategorical(index) {
     carousel_item_active = '"'
     classText = ''
 
@@ -51,8 +58,6 @@ function BoxPlot(index) {
 
     // create dummy data
     d3.csv(dataset, function (data) {
-
-
 
         min_value = d3.min(data, d => d[numeric_columns[0]])
         max_value = d3.max(data, d => d[numeric_columns[0]])
@@ -147,9 +152,11 @@ function BoxPlot(index) {
             .attr("stroke", "black")
             .style("width", 80)
     })
+
+
 }
 
-function Violin(index) {
+function Violin_OneNumeric_OneCategorical(index) {
     carousel_item_active = '"'
     classText = ''
 
@@ -261,95 +268,8 @@ function Violin(index) {
 
 }
 
-function Histogram(index) {
+function Line_Two_Numerical()
+{
+    console.log("Line plotting with two numerical variables...")
 
-    carousel_item_active = '"'
-    classText = ''
-
-
-    if (index == 0) {
-        carousel_item_active = 'active"'
-        classText = 'class = "active" '
-    }
-
-    var graph = '<div id="histogram' + index + '" class="carousel-item ' + carousel_item_active + ' style="text-align: center">'
-    var indicator = '<li data-target="#carouselExampleIndicators" data-slide-to="' + index + '" ' + classText + '></li>'
-    $("#graph-indicators").append(indicator)
-    $("#graphs").append(graph)
-
-
-    // set the dimensions and margins of the graph
-    var margin = { top: 10, right: 30, bottom: 30, left: 40 },
-        width = 400 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
-
-    // append the svg object to the body of the page
-    var svg = d3.select("#histogram" + index)
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-    // get the data
-    d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_doubleHist.csv", function (data) {
-
-        // X axis: scale and draw:
-        var x = d3.scaleLinear()
-            .domain([-4, 9])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
-            .range([0, width]);
-        svg.append("g")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x));
-
-        // set the parameters for the histogram
-        var histogram = d3.histogram()
-            .value(function (d) { return +d.value; })   // I need to give the vector of value
-            .domain(x.domain())  // then the domain of the graphic
-            .thresholds(x.ticks(40)); // then the numbers of bins
-
-        // And apply twice this function to data to get the bins.
-        var bins1 = histogram(data.filter(function (d) { return d.type === "variable 1" }));
-        var bins2 = histogram(data.filter(function (d) { return d.type === "variable 2" }));
-
-        // Y axis: scale and draw:
-        var y = d3.scaleLinear()
-            .range([height, 0]);
-        y.domain([0, d3.max(bins1, function (d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
-        svg.append("g")
-            .call(d3.axisLeft(y));
-
-        // append the bars for series 1
-        svg.selectAll("rect")
-            .data(bins1)
-            .enter()
-            .append("rect")
-            .attr("x", 1)
-            .attr("transform", function (d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
-            .attr("width", function (d) { return x(d.x1) - x(d.x0) - 1; })
-            .attr("height", function (d) { return height - y(d.length); })
-            .style("fill", "#69b3a2")
-            .style("opacity", 0.6)
-
-        // append the bars for series 2
-        svg.selectAll("rect2")
-            .data(bins2)
-            .enter()
-            .append("rect")
-            .attr("x", 1)
-            .attr("transform", function (d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
-            .attr("width", function (d) { return x(d.x1) - x(d.x0) - 1; })
-            .attr("height", function (d) { return height - y(d.length); })
-            .style("fill", "#404080")
-            .style("opacity", 0.6)
-    })
-}
-
-function sortFunction(a, b) {
-    if (a[1] === b[1]) {
-        return 0;
-    }
-    else {
-        return (a[1] > b[1]) ? -1 : 1;
-    }
 }

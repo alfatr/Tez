@@ -1,4 +1,5 @@
 {
     "git.ignoreLimitWarning": true,
     "python.pythonPath": "C:\\Users\\Weaver\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+    "python.formatting.provider": "autopep8",
 }
