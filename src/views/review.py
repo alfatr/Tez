@@ -12,9 +12,6 @@ import os.path
 def review():
     from main import app
 
-    if request.method == 'POST':
-        return "<h1>POSTED</h1>"
-    
     def analysis(dataset_file_name : str):
         if dataset_file_name == '' :
             return redirect(url_for('upload.upload'))
@@ -22,15 +19,19 @@ def review():
         df = pd.DataFrame([])
 
         if dataset_file_name.endswith('.csv'):
-            df = pd.read_csv(os.path.join(app.root_path, 'static/datasets', dataset_file_name))
+            df = pd.read_csv(os.path.join(app.root_path, 'static\datasets', dataset_file_name))
         
         elif dataset_file_name.endswith('.xlsx'):
-            df = pd.read_excel(os.path.join(app.root_path, 'static/datasets', dataset_file_name))
+            df = pd.read_excel(os.path.join(app.root_path, 'static\datasets', dataset_file_name))
 
         return df
 
     dataset_file_name = request.args.get('dataset_file', type = str)
     dataframe = analysis(dataset_file_name)
+
+    if request.method == 'POST':
+        chosen_columns = request.form.getlist('chosen_columns')
+        return redirect(url_for('results.results', dataset = dataset_file_name, chosen_columns = chosen_columns))
 
     return render_template(
         "review.html",

@@ -1,28 +1,32 @@
-
 from flask import Blueprint, render_template, redirect, url_for, request
 
 results_bp = Blueprint("results", __name__, static_folder="static", template_folder="templates")
 
 @results_bp.route("/results", methods=['GET', 'POST'])
 def results():
+        chosen_columns = request.args.getlist('chosen_columns')
+        dataset = request.args.get('dataset')
+
         import pandas as pd
         import numpy as np
         import itertools
         import os
         from main import app
+        import json
 
-        ## Bu sayfa şuan statik durumunda
-        ## Değerleri kod içinden değiştirmek gerekiyor.
+        graphs = pd.read_excel(os.path.join(app.root_path, 'static/datasets',"graphsv2.xlsx"))
+
+
+        df = pd.DataFrame([])
+
+        if dataset.endswith('.csv'):
+            df = pd.read_csv(os.path.join(app.root_path, 'static/datasets', dataset))
         
-        graphs = pd.read_excel(os.path.join(app.root_path, 'static/datasets', "graphs.xlsx"))
-        df = pd.read_csv(os.path.join(app.root_path, 'static/datasets', "iris.csv"))
-        chosen_columns = ['sepal.length', 'sepal.width', 'variety']
-
-
-        # df = pd.read_csv('datasets/3_TwoNumOrdered.csv')
-        # chosen_columns = ['date', 'value']
+        elif dataset.endswith('.xlsx'):
+            df = pd.read_excel(os.path.join(app.root_path, 'static/datasets', dataset))
 
         df = df.loc[:,chosen_columns]
+
         def return_datatype(datatype) -> str:
                 numeric_types = ['float64', 'int64']
                 categorical_types = ['object']
@@ -36,131 +40,174 @@ def results():
                         return 'Time Series'
 
 
-        def return_datatypes(df : pd.DataFrame) -> []:
+        def dataframe_datatypes(df : pd.DataFrame) -> []:
                 numeric = 0
                 categorical = 0
                 time_series = 0
-                several_num = 0
-                several_cat = 0
-
-                for t in df.dtypes:
-                        if(return_datatype(t) == 'Numeric'):
+                
+                for d in df.dtypes:
+                        if(return_datatype(str(d)) == 'Numeric'):
                                 numeric = numeric + 1
-                        if(return_datatype(t) == 'Categorical'):
+                        if(return_datatype(str(d)) == 'Categorical'):
                                 categorical = categorical + 1
-                        if(return_datatype(t) == 'Time Series'):
+                        if(return_datatype(str(d)) == 'Time Series'):
                                 time_series = time_series + 1
-                
-                ##Num&Cat
-                if(numeric > 0 and categorical > 0):
-                        if(categorical > 1):
-                                categorical = 0
-                                several_cat = 1
-                        if(numeric > 1):
-                                numeric = 0
-                                several_num = 1
-                
-                ##Num
-                if(categorical == 0 and numeric > 0):
-                        if(numeric > 3):
-                                numeric = 0
-                                several_num = 1
-                ##Cat
-                if(numeric == 0 and categorical > 0):
-                        if(categorical > 1):
-                                categorical = 0
-                                several_cat = 1 
-                
-                return[numeric, several_num, categorical, several_cat, time_series]
-                
-        df_dtypes = return_datatypes(df)
-        drawable_graphs = graphs.loc[(graphs["Numeric"] == df_dtypes[0]) & (graphs["Several Numeric"] == df_dtypes[1]) & (graphs["Categorical"] == df_dtypes[2]) & (graphs["Several Categorical"] == df_dtypes[3]) & (graphs["Time Series"] == df_dtypes[4])]
+                        
+                return [numeric, categorical, time_series]
 
-        def check_order_status(df : pd.DataFrame) -> []:
+        df_dtypes = dataframe_datatypes(df)
+
+        def find_possible_graphs(df_dtypes : [], graphs : pd.DataFrame,) -> []:
+                possible = []
+
+                for g in graphs.values:
+                        g_dtypes = [int(g[2]), int(g[3]), int(g[4])]
+                        if(df_dtypes == g_dtypes):
+                                possible.append(g)
+                
+                possible = pd.DataFrame(possible)
+                possible.columns = graphs.columns
+                
+                return possible
+
+        possible_graphs = find_possible_graphs(df_dtypes, graphs)
+
+        def ordering_of_df(df : pd.DataFrame) -> []:
                 orderings = []
                 
                 for c in df.columns:
-                        if(return_datatype(df[c].dtypes) == 'Numeric'):
-                                if(df[c].is_monotonic):
-                                        orderings.append([c, True])
-                                else:
-                                        orderings.append([c, False])
+                        if(return_datatype(str(df[c].dtype)) == 'Numeric'):
+                                values = df[c].values    
+                                sorted_elements = [values[index] <= values[index+1] for index in range(len(values)-1)]
+                                orderings.append(all(sorted_elements))
+                        else:
+                                orderings.append(False)
                 
                 return orderings
 
-        orderings = check_order_status(df)
-
-        def calculate_row_cost(df : pd.DataFrame) -> float:
-    
-                cost = df.shape[0]
-                
-                return cost
-                
-        row_cost = calculate_row_cost(df)
-
-        def check_groups(df : pd.DataFrame) -> []:
+        def single_obs_per_group(df = pd.DataFrame) -> []:
                 groupings = []
                 
                 for c in df.columns:
-                #         if(return_datatype(df[c].dtypes) == 'Categorical'):            
-                #             flag = False
+                        if(return_datatype(str(df[c].dtype)) == 'Categorical'):
+                                groupings.append(len(df.groupby(c).size()) == df.shape[0])
+                        else:
+                                groupings.append(False)
                         
-                #             for group in df.groupby(c).size().values:
-                #                 if group > 1:
-                #                     flag = True
-                                
-                #             groupings.append([c, flag, df.groupby(c).size().shape[0]])
-                        flag = False
-                        
-                        for group in df.groupby(c).size().values:
-                                if group > 1:
-                                        flag = True
-
-                                groupings.append([c, flag, df.groupby(c).size().shape[0]])
-                                
                 return groupings
 
-        groupings = check_groups(df)
-        pd.DataFrame(groupings)
-        if(len(groupings) == 0):
-                groupings = [['', '', '']]
-    
-        df_lists = [groupings, orderings]
-
-        characteristic_list = []
-
-        for element in itertools.product(*df_lists):
-                characteristic_list.append([element[0][0], element[0][1], element[0][2], element[1][0], element[1][1], row_cost])
-
-        characteristics = pd.DataFrame(characteristic_list, columns = ['Grouping Column', 'Several Observations', 'Group Count', 'Ordering Column', 'Ordered', 'Row Count'])
-
-        possible_drawings = []
-
-        for combination in characteristics.values:
-                several_obs = 0
-                single_obs = 0
-                ordered = 0
-        
-                if(combination[1]):
-                        several_obs = 1
-                        single_obs = 0
-                else:
-                        several_obs = 1
-                        single_obs = 0
+        def several_obs_per_group(df = pd.DataFrame) -> []:
+                groupings = []
                 
-                if(combination[4]):
-                        ordered = 1
+                for c in df.columns:
+                        if(return_datatype(str(df[c].dtype)) == 'Categorical'):
+                                groupings.append(not len(df.groupby(c).size()) == df.shape[0])
+                        else:
+                                groupings.append(False)
+                        
+                return groupings
+
+        def eliminate_further(df : pd.DataFrame, possible_graphs : pd.DataFrame):
+                possible = []
+                
+                orderings = ordering_of_df(df)
+                one_obs = single_obs_per_group(df)
+                sev_obs = several_obs_per_group(df)
+
+                # Elimination
+                for g in range(possible_graphs.shape[0]):
+                        possible_flag = True
+                        
+                        if(possible_graphs.loc[g]['Order'] == 1):
+                                if(any(orderings) == 1):          
+                                        pass
+                                else:
+                                        possible_flag = False
+                                
+                        if(possible_graphs.loc[g]['One Obs'] == 1):
+                                if(any(one_obs) == 1):
+                                        pass
+                                else:
+                                        possible_flag = False
+                        
+                        if(possible_graphs.loc[g]['Several Obs'] == 1):
+                                if(any(sev_obs) == 1):
+                                        pass
+                                else:
+                                        possible_flag = False
+                        
+                        if(possible_flag):
+                                possible.append(possible_graphs.loc[g].values)
+                        
+                
+                possible_graphs = pd.DataFrame(possible)
+                possible_graphs.columns = graphs.columns   
+                
+                return possible_graphs
+
+        possible_graphs = eliminate_further(df, possible_graphs)
+
+        penalties = []
+
+        for g in range(possible_graphs.shape[0]):
+                penalties.append(0)
+
+        def max_group_penalty(df : pd.DataFrame, graph : pd.DataFrame):
+                penalty = 0 
+                # diff = len(df.groupby('variety').size()) - possible_graphs.loc[g]['Max Group']
+                diff = 0
+                
+                for c in df.columns:
+                        if(return_datatype(str(df[c].dtype)) == 'Categorical'):
+                                diff = len(df.groupby(c).size()) - graph['Max Group']
+
+                if (diff) < 0:
+                        penalty = ((diff**2)**.25)
+                else: 
+                        penalty = ((diff + 1)**4)
+                        
+                return penalty
+
+        max_group_penalty(df, possible_graphs.loc[0])
+
+        def min_row_penalty(df : pd.DataFrame, graph : pd.DataFrame):
+
+                rows = df.shape[0]
+                diff = graph['Min Row'] - rows
+                if (diff < 0):
+                        penalty = diff / (diff - graph['Min Row'])
+                        ## Üstel artış
                 else:
-                        ordered = 0
+                        penalty = diff / (diff - graph['Min Row'])    
+                        ## Logaritmik artış   
+                        
+                return penalty
 
-        combination_df = drawable_graphs.loc[((drawable_graphs["One Obs. Per Group"] == single_obs)
-                                                & (graphs["Several Obs. Per Group"] == several_obs)
-                                                & (graphs["Ordered"] == ordered)) | ((graphs["Several Obs. Per Group"] == 0)
-                                                & (graphs["Ordered"] == 0))]
-        
-        
-        possible_drawings.append(pd.DataFrame(combination_df.values, columns = graphs.columns))
+        min_row_penalty(df, possible_graphs.loc[0])
 
-        return render_template("results.html", title = 'Results Page',  possible_drawings = possible_drawings[0])
+        def calculate_scores(possible_graphs : pd.DataFrame) -> []:
+                scores = []
+                
+                for g in range(possible_graphs.shape[0]):
+                        scores.append([possible_graphs.loc[g]['Name'], 0])
+                        
+                        ## Scoring
+                        if(possible_graphs.loc[g]['Min Row'] > 0):
+                                scores[g][1] =+ min_row_penalty(df, possible_graphs.loc[g])
+                        if(possible_graphs.loc[g]['Std'] > 0):
+                                print('  - Std calculation')
+                        if(possible_graphs.loc[g]['Max Group'] > 0):
+                                scores[g][1] =+ max_group_penalty(df, possible_graphs.loc[g])
+                        
+                return scores
+                        
+        scores = calculate_scores(possible_graphs)
 
-        
+        data = {
+                'title' : "Results Page",
+                'dataset' : df.to_json(orient='records'),
+                'chosen_columns' : chosen_columns,
+                'scores' : scores
+        }
+
+        return render_template('results.html', title = 'Results Page', dataset = dataset, chosen_columns = chosen_columns, scores = scores, data = data)

@@ -1,6 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 from views import home
 from views import upload

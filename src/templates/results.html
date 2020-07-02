@@ -6,7 +6,8 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Graphs</h1>
+    <h1>Possible Graphs</h1>
+
     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators" id="graph-indicators">
 
@@ -27,5 +28,12 @@
 
 {% block scripts %}
     {{ super() }}
+    <script>
+        var dataset = "{{ dataset | safe }}";
+        var scores = {{ scores | tojson | safe }};  
+        var chosen_columns = {{ chosen_columns | safe }};
+        
+    </script>
     <script src="{{ url_for('static', filename='js/results.js') }}" type="text/javascript"></script>
+    
 {% endblock %}
