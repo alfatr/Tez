@@ -40,6 +40,33 @@ def results():
                         return 'Time Series'
 
 
+        dt_df = pd.DataFrame(df.dtypes)
+
+        numeric_columns = []
+        categorical_columns = []
+        time_series_columns = []
+
+        def create_datatype_lists(dt_df : pd.DataFrame):
+                numeric_types = ['float64', 'int64']
+                categorical_types = ['object']
+                time_series_types = []
+                
+                
+                for i in range(dt_df.shape[0]):
+                        column_datatype = dt_df.iloc[i][0]
+                        column_name = dt_df.iloc[i].name
+                        
+                        if(column_datatype in (numeric_types)):
+                                numeric_columns.append(column_name)
+                        if(column_datatype in (categorical_types)):
+                                categorical_columns.append(column_name)
+                        if(column_datatype in (time_series_types)):
+                                time_series_columns.append(column_name)
+                
+                
+        create_datatype_lists(dt_df)
+        
+        
         def dataframe_datatypes(df : pd.DataFrame) -> []:
                 numeric = 0
                 categorical = 0
@@ -203,11 +230,13 @@ def results():
                         
         scores = calculate_scores(possible_graphs)
 
-        data = {
-                'title' : "Results Page",
-                'dataset' : df.to_json(orient='records'),
-                'chosen_columns' : chosen_columns,
-                'scores' : scores
-        }
 
-        return render_template('results.html', title = 'Results Page', dataset = dataset, chosen_columns = chosen_columns, scores = scores, data = data)
+
+        return render_template('results.html', 
+                title = 'Results Page', 
+                dataset = dataset, 
+                chosen_columns = chosen_columns, 
+                scores = scores,
+                numeric_columns = numeric_columns,
+                categorical_columns = categorical_columns,
+                time_series_columns = time_series_columns)

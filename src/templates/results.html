@@ -12,9 +12,7 @@
         <ol class="carousel-indicators" id="graph-indicators">
 
         </ol>
-        <div class="carousel-inner" id="graphs">
-            
-        </div>
+        <div class="carousel-inner" id="graphs"></div>>
         <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="sr-only">Previous</span>
@@ -32,6 +30,9 @@
         var dataset = "{{ dataset | safe }}";
         var scores = {{ scores | tojson | safe }};  
         var chosen_columns = {{ chosen_columns | safe }};
+        var numeric_columns = {{ numeric_columns | safe }};
+        var categorical_columns = {{ categorical_columns | safe }};
+        var time_series_columns = {{ time_series_columns | safe }};
         
     </script>
     <script src="{{ url_for('static', filename='js/results.js') }}" type="text/javascript"></script>
