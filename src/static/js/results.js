@@ -35,7 +35,6 @@ function BoxPlot(index) {
     $("#graph-indicators").append(indicator)
     $("#graphs").append(graph)
 
-
     // set the dimensions and margins of the graph
     var margin = { top: 10, right: 30, bottom: 30, left: 40 },
         width = 400 - margin.left - margin.right,
@@ -55,15 +54,15 @@ function BoxPlot(index) {
 
 
 
-        min_value = d3.min(data, d => d[chosen_columns[0]])
-        max_value = d3.max(data, d => d[chosen_columns[0]])
+        min_value = d3.min(data, d => d[numeric_columns[0]])
+        max_value = d3.max(data, d => d[numeric_columns[0]])
 
         min_value = min_value - ((max_value - min_value) / 4)
         max_value = parseFloat(max_value) + parseFloat((max_value - min_value) / 4)
 
 
         var group_names = d3.nest()
-            .key(function (d) { return d[chosen_columns[1]]; })
+            .key(function (d) { return d[categorical_columns[0]]; })
             .rollup(function (v) { return v.length; })
             .entries(data);
         groups = []
@@ -71,18 +70,18 @@ function BoxPlot(index) {
         group_names.forEach((item) => groups.push(item.key))
         // Compute quartiles, median, inter quantile range min and max --> these info are then used to draw the box.
         var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
-            .key(function (d) { return d[chosen_columns[1]]; })
+            .key(function (d) { return d[categorical_columns[0]]; })
             .rollup(function (d) {
                 q1 = d3.quantile(d.map(function (g) {
-                    return g[chosen_columns[0]];
+                    return g[numeric_columns[0]];
                 }).sort(d3.ascending), .25)
 
                 median = d3.quantile(d.map(function (g) {
-                    return g[chosen_columns[0]];
+                    return g[numeric_columns[0]];
                 }).sort(d3.ascending), .5)
 
                 q3 = d3.quantile(d.map(function (g) {
-                    return g[chosen_columns[0]];
+                    return g[numeric_columns[0]];
                 }).sort(d3.ascending), .75)
 
                 interQuantileRange = q3 - q1
@@ -183,8 +182,8 @@ function Violin(index) {
     // Read the data and compute summary statistics for each specie
     d3.csv(dataset, function (data) {
 
-        min_value = d3.min(data, d => d[chosen_columns[0]])
-        max_value = d3.max(data, d => d[chosen_columns[0]])
+        min_value = d3.min(data, d => d[numeric_columns[0]])
+        max_value = d3.max(data, d => d[numeric_columns[0]])
 
         min_value = min_value - ((max_value - min_value) / 4)
         max_value = parseFloat(max_value) + parseFloat((max_value - min_value) / 4)
@@ -196,7 +195,7 @@ function Violin(index) {
         svg.append("g").call(d3.axisLeft(y))
 
         var group_names = d3.nest()
-            .key(function (d) { return d[chosen_columns[1]]; })
+            .key(function (d) { return d[categorical_columns[0]]; })
             .rollup(function (v) { return v.length; })
             .entries(data);
         groups = []
@@ -219,9 +218,9 @@ function Violin(index) {
 
         // Compute the binning for each group of the dataset
         var sumstat = d3.nest()  // nest function allows to group the calculation per level of a factor
-            .key(function (d) { return d[chosen_columns[1]]; })
+            .key(function (d) { return d[categorical_columns[0]]; })
             .rollup(function (d) {   // For each key..
-                input = d.map(function (g) { return g[chosen_columns[0]]; })    // Keep the variable called Sepal_Length
+                input = d.map(function (g) { return g[numeric_columns[0]]; })    // Keep the variable called Sepal_Length
                 bins = histogram(input)   // And compute the binning on it.
                 return (bins)
             })
